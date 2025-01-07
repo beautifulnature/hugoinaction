@@ -1,0 +1,3 @@
+[build]
+  command = "hugo --minify --baseURL $DEPLOY_PRIME_URL"  # Build command
+  publish = "public"                # Directory to publish
