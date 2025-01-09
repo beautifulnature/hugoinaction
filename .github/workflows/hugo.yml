@@ -73,29 +73,96 @@
 #         id: deployment
 #         uses: actions/deploy-pages@v4
 
-name: GitHub pages
+# name: GitHub pages
 
-on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+# on:
+#   push:
+#     branches:
+#       - main
+#   workflow_dispatch:
+
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-18.04
+#     steps:
+#       - uses: actions/checkout@v4
+#         with:
+#           fetch-depth: 0
+
+#       - name: Setup Hugo
+#         uses: peaceiris/actions-hugo@v2
+#         with:
+#           hugo-version: '0.128.0'
+#           extended: true
+
+#       - name: Build
+#         run: hugo --minify --baseURL=https://beautifulnature.github.io/hugoinaction
+
+#       - name: Deploy
+#         uses: peaceiris/actions-gh-pages@v3
+#         with:
+#           github_token: ${{ secrets.GITHUB_TOKEN }}
+#           publish_dir: ./public
+
+name: Publish Blog
+
+on: push
 
 jobs:
   deploy:
-    runs-on: ubuntu-18.04
+
+    runs-on: ubuntu-22.04
+
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+
+      # CHEKCOUT REPOSITORY
+
+      - name: Git checkout
+        uses: actions/checkout@v3
+
+      # SETUP HUGO
+
+      # Read environemnt variable for subsequent actions.
+      # See: https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-environment-variable 
+      - name: Read .env
+        run: |
+          . ./.env
+          echo "HUGO_VERSION=${HUGO_VERSION}" >> $GITHUB_ENV          
 
       - name: Setup Hugo
         uses: peaceiris/actions-hugo@v2
         with:
-          hugo-version: '0.128.0'
+          hugo-version: '${{ env.HUGO_VERSION }}'
           extended: true
 
-      - name: Build
+      - name: Cache Hugo
+        uses: actions/cache@v3
+        with:
+          path: /tmp/hugo_cache
+          key: ${{ runner.os }}-hugomod-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-hugomod-            
+
+      # - name: Build Blog
+      #   env:
+      #     TZ: 'Europe/Berlin'
+      #   run: hugo --minify
+
+      # DEPLOY TO REMOTE SERVER
+
+      # - name: Install SSH Key
+      #   uses: shimataro/ssh-key-action@v2
+      #   with:
+      #     key: ${{ secrets.DEPLOY_KEY }} 
+      #     known_hosts: 'placeholder'
+
+      # - name: Adding Known Hosts
+      #   run: ssh-keyscan -H ${{ secrets.DEPLOY_HOST_IP }} >> ~/.ssh/known_hosts
+
+      # - name: Deploy with rsync
+      #   run: rsync -avz --delete ./public/ ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST_IP }}:${{ secrets.DEPLOY_PATH }}
+
+       - name: Build
         run: hugo --minify --baseURL=https://beautifulnature.github.io/hugoinaction
 
       - name: Deploy
