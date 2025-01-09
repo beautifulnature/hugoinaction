@@ -1,47 +1,23 @@
-name: Publish Blog
+name: GitHub Pages
 
-on: push
+on:
+  push:
+    branches:
+    - chapter-02-04
 
 jobs:
-  deploy:
-
-    runs-on: ubuntu-22.04
-
+  build-deploy:
+    runs-on: ubuntu-20.04
     steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: true
 
-      # CHEKCOUT REPOSITORY
-
-      - name: Git checkout
-        uses: actions/checkout@v3
-
-      # SETUP HUGO
-
-      # Read environemnt variable for subsequent actions.
-      # See: https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#setting-an-environment-variable 
-      - name: Read .env
-        run: |
-          . ./.env
-          echo "HUGO_VERSION=${HUGO_VERSION}" >> $GITHUB_ENV          
-
-      - name: Setup Hugo
-        uses: peaceiris/actions-hugo@v2
-        with:
-          hugo-version: '${{ env.HUGO_VERSION }}'
-          extended: true
-
-      - name: Cache Hugo
-        uses: actions/cache@v3
-        with:
-          path: /tmp/hugo_cache
-          key: ${{ runner.os }}-hugomod-${{ hashFiles('**/go.sum') }}
-          restore-keys: |
-            ${{ runner.os }}-hugomod-            
-
-      - name: Build
-        run: hugo --minify --baseURL=https://beautifulnature.github.io/hugoinaction
-
-      - name: Deploy
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./public
+    - name: Build
+      run: hugo --minify --baseURL=https://beautifulnature.github.io/hugoinaction
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v2
+      env:
+        ACTIONS_DEPLOY_KEY: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+        PUBLISH_BRANCH: gh-pages
+        PUBLISH_DIR: ./public
