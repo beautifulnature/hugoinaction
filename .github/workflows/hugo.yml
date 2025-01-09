@@ -13,11 +13,11 @@ jobs:
       with:
         submodules: true
 
-    - name: Install Hugo
+    - name: Install Specific Version of Hugo
       run: |
-        # Install necessary dependencies
-        sudo apt-get update
-        sudo apt-get install -y hugo
+        HUGO_VERSION="0.112.5" # Specify your desired version here
+        wget https://github.com/goharbor/hugo/releases/download/v$HUGO_VERSION/hugo_${HUGO_VERSION}_Linux-64bit.deb
+        sudo dpkg -i hugo_${HUGO_VERSION}_Linux-64bit.deb
 
     - name: Build
       run: hugo --minify --baseURL=https://beautifulnature.github.io/hugoinaction
