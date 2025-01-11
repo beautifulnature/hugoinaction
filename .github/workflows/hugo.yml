@@ -1,4 +1,4 @@
-# workflow for building and deploying a  Hugo site to GitHub Pages
+# workflow for building and deploying a Hugo site to GitHub Pages
 name: Deploy Hugo Site to GitHub Pages
 
 on:
@@ -60,7 +60,7 @@ jobs:
           hugo \
             --gc \
             --minify \
-            --baseURL "https://beautifulnature.github.io/hugoinaction/
+            --baseURL "https://beautifulnature.github.io/hugoinaction/"
             # --baseURL "https://beautifulnature.github.io/hugoinaction/${{ github.ref_name }}/"  # Use branch name in URL          
       - name: Upload artifact for deployment
         uses: actions/upload-pages-artifact@v3
