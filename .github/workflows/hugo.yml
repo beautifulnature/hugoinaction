@@ -42,7 +42,11 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions-gh-pages@v2
+        uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.TOKEN }}
           publish_dir: ./public
+          user_name: beautifulnature
+          user_email: heimarunag@gmail.com
+          external_repository: beautifulnature/beautifulnature.github.io/hugoinaction
+          publish_branch: gh_pages
