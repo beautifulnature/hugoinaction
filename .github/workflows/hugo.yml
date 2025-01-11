@@ -42,7 +42,7 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/actions-gh-pages@v2
+        uses: actions-gh-pages@v2
         with:
           github_token: ${{ secrets.TOKEN }}
           publish_dir: ./public
