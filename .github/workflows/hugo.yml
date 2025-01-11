@@ -32,8 +32,7 @@ jobs:
           hugo-version: ${{ env.HUGO_VERSION }}
 
       - name: Build the site
-        run: |
-          hugo --minify --baseURL https://beautifulnature.github.io/hugoinaction
+        run: hugo --minify --baseURL https://beautifulnature.github.io/hugoinaction
 
   deploy:
     runs-on: ubuntu-latest
