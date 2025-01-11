@@ -25,6 +25,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+        with:
+          ref: chapter-02-04 # check out the specific branch
 
       - name: Install Hugo
         uses: peaceiris/actions-hugo@v2
