@@ -52,7 +52,7 @@ jobs:
           hugo \
             --gc \
             --minify \
-            --baseURL "${{ steps.pages.outputs.base_url }}/${{ github.ref_name }}"  # Use branch name in URL          
+            --baseURL "${{ steps.pages.outputs.base_url }}"  # Use branch name in URL          
       - name: Upload artifact for deployment
         uses: actions/upload-pages-artifact@v3
         with:
