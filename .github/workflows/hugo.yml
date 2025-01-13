@@ -73,12 +73,19 @@ jobs:
 
   # Deployment job
   deploy:
-    environment:
-      name: github-pages  # Dynamic environment based on branch name
-      url: "https://beautifulnature.github.io/hugoinaction/"
+    #environment:
+      #name: github-pages  # Dynamic environment based on branch name
+      #url: "https://beautifulnature.github.io/hugoinaction/"
     runs-on: ubuntu-latest  # Corrected indentation here
     needs: build
+    strategy:
+      matrix:
+        branch: [chapter-02-01, chapter-02-02, chapter-02-03, chapter-02-04] # Ensure this matches the branches in build job
     steps:
+      - name: Download artifact for deployment
+        uses: actions/download-artifact@v2  # Download the specific artifact for this branch
+        with:
+          name: hugoinaction-${{ matrix.branch }} # Match the artifact name used in build job
       - name: Configure Pages
         id: pages
         uses: actions/configure-pages@v5
