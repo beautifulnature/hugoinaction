@@ -68,6 +68,5 @@ jobs:
       - name: Deploy to GitHub Pages (chapter 2.4)
         uses: actions/deploy-pages@v4
         with:
-          publish_branch: gh-pages
-          publish_dir: ./public/chapter-02-04
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          artifact_name: github-pages-chapter-02-04
