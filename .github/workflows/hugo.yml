@@ -151,7 +151,7 @@ jobs:
            name : github-pages-chapter-02-04 # Unique naming per run 
            path : ./public 
 
-deploy:
+  deploy:
     runs-on: ubuntu-latest  
     needs: build [build-chapter-02-01, build-chapter-02-02, build-chapter-02-03, build-chapter-02-04] # Wait for all builds
     
