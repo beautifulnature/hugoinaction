@@ -59,12 +59,7 @@ jobs:
     runs-on: ubuntu-latest  
     needs: [build-chapter-02-04] # Wait for all builds
     
-    steps:
-      - name: Download artifact for deployment (chapter 2.4)
-        uses: actions/download-artifact@v4 
-        with:
-          name: chapter-02-04
-      
+    steps:      
       - name: Deploy to GitHub Pages (chapter 2.4)
         uses: actions/deploy-pages@v4
         with:
