@@ -1,4 +1,4 @@
-name: Deploy Hugo Site to  GitHub Pages
+name: Deploy Hugo Site to GitHub Pages
 
 on:
   push:
@@ -23,11 +23,8 @@ defaults:
     shell: bash
 
 jobs:
-  build:
+  build-chapter-02-01:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        branch: [chapter-02-01, chapter-02-02, chapter-02-03, chapter-02-04]
     env:
       HUGO_VERSION: 0.140.1
     steps:
@@ -39,7 +36,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
-          ref: ${{ matrix.branch }}
+          ref: chapter-02-01
           submodules: recursive
           fetch-depth: 0
       
@@ -49,23 +46,62 @@ jobs:
           HUGO_ENVIRONMENT: production
           TZ: America/Los_Angeles
         run: |
-          hugo --gc --minify --baseURL "https://beautifulnature.github.io/hugoinaction/${{ matrix.branch }}"
+          hugo --gc --minify --baseURL "https://beautifulnature.github.io/hugoinaction/chapter-02-01"
       
       - name: Upload artifact for deployment
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-artifact@v3
         with:
-          name: github-pages-${{ matrix.branch }} # Unique naming per run
+          name: github-pages-chapter-02-01 # Unique naming per run
           path: ./public
+
+  build-chapter-02-02:
+    runs-on: ubuntu-latest
+    needs: build-chapter-02-01 # Ensure this job runs after the previous one
+    env:
+      HUGO_VERSION: 0.140.1
+    steps:
+      # Similar steps as above, but for chapter-02-02...
+
+  build-chapter-02-03:
+    runs-on: ubuntu-latest
+    needs: [build-chapter-02-01, build-chapter-02-02] # Wait for previous builds
+    env:
+      HUGO_VERSION: 0.140.1
+    steps:
+      # Similar steps as above, but for chapter-02-03...
+
+  build-chapter-02-04:
+    runs-on: ubuntu-latest
+    needs: [build-chapter-02-01, build-chapter-02-02, build-chapter-02-03] # Wait for previous builds
+    env:
+      HUGO_VERSION: 0.140.1
+    steps:
+      # Similar steps as above, but for chapter-02-04...
 
   deploy:
     runs-on: ubuntu-latest  
-    needs: build
+    needs: [build-chapter-02-01, build-chapter-02-02, build-chapter-02-03, build-chapter-02-04] # Wait for all builds
     
     steps:
-      - name: Download artifact for deployment
+      - name: Download artifact for deployment (chapter 2.1)
         uses: actions/download-artifact@v4 
         with:
-          name: github-pages-${{ matrix.branch }} # Match the artifact name used in build job
+          name: github-pages-chapter-02-01
+      
+      - name: Download artifact for deployment (chapter 2.2)
+        uses: actions/download-artifact@v4 
+        with:
+          name: github-pages-chapter-02-02
+      
+      - name: Download artifact for deployment (chapter 2.3)
+        uses: actions/download-artifact@v4 
+        with:
+          name: github-pages-chapter-02-03
+      
+      - name: Download artifact for deployment (chapter 2.4)
+        uses: actions/download-artifact@v4 
+        with:
+          name: github-pages-chapter-02-04
       
       - name: Deploy to GitHub Pages
         id: deployment
