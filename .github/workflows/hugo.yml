@@ -10,41 +10,150 @@ on:
   workflow_dispatch:
 
 permissions:
-  id-token: write  # Ensure write access for id-token
-  pages: write      # Ensure write access for GitHub Pages
-  contents: read    # Read access for repository contents
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+defaults:
+  run:
+    shell: bash
 
 jobs:
-  build:
+  build-chapter-02-01:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        branch: [chapter-02-01, chapter-02-02, chapter-02-03, chapter-02-04]
+    env:
+      HUGO_VERSION: 0.140.1
     steps:
+      - name: Install Hugo CLI
+        run: |
+          wget -O ${{ runner.temp }}/hugo.deb https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb \
+          && sudo dpkg -i ${{ runner.temp }}/hugo.deb          
+      
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
-          ref: ${{ matrix.branch }}
+          ref: chapter-02-01
           submodules: recursive
-      
-      - name: Install Hugo CLI
-        run: |
-          wget -O hugo.deb https://github.com/gohugoio/hugo/releases/download/v0.140.1/hugo_extended_0.140.1_linux-amd64.deb \
-          && sudo dpkg -i hugo.deb
+          fetch-depth: 0
       
       - name: Build with Hugo
+        env:
+          HUGO_CACHEDIR: ${{ runner.temp }}/hugo_cache
+          HUGO_ENVIRONMENT: production
+          TZ: America/Los_Angeles
         run: |
-          hugo --gc --minify --baseURL "https://yourusername.github.io/yourrepository/${{ matrix.branch }}"
+          hugo --gc --minify --baseURL "https://beautifulnature.github.io/hugoinaction/chapter-02-01"
       
       - name: Upload artifact for deployment
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
-          name: github-pages-${{ matrix.branch }} # Unique naming per branch
+          name: github-pages-chapter-02-01 # Unique naming per run
           path: ./public
+
+  build-chapter-02-02:
+    runs-on: ubuntu-latest
+    needs: build-chapter-02-01 # Ensure this job runs after the previous one
+    env:
+      HUGO_VERSION: 0.140.1
+    steps:
+      - name: Install Hugo CLI
+        run: |
+          wget -O ${{ runner.temp }}/hugo.deb https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb \
+          && sudo dpkg -i ${{ runner.temp }}/hugo.deb          
+      
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          ref: chapter-02-02
+          submodules: recursive
+          fetch-depth: 0
+      
+      - name: Build with Hugo
+        env:
+          HUGO_CACHEDIR: ${{ runner.temp }}/hugo_cache
+          HUGO_ENVIRONMENT: production
+          TZ: America/Los_Angeles
+        run: |
+          hugo --gc --minify --baseURL "https://beautifulnature.github.io/hugoinaction/chapter-02-02"
+      
+      - name: Upload artifact for deployment
+        uses: actions/upload-artifact@v3
+        with:
+          name: github-pages-chapter-02-02 # Unique naming per run
+          path: ./public
+
+  build-chapter-02-03:
+    runs-on: ubuntu-latest
+    needs: [build-chapter-02-01, build-chapter-02-02] # Wait for previous builds to complete
+    env:
+      HUGO_VERSION: 0.140.1
+    steps:
+      - name: Install Hugo CLI
+        run: |
+          wget -O ${{ runner.temp }}/hugo.deb https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb \
+          && sudo dpkg -i ${{ runner.temp }}/hugo.deb          
+      
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          ref: chapter-02-03
+          submodules: recursive
+          fetch-depth: 0
+      
+      - name: Build with Hugo
+        env:
+          HUGO_CACHEDIR: ${{ runner.temp }}/hugo_cache
+          HUGO_ENVIRONMENT: production
+          TZ: America/Los_Angeles
+        run: |
+          hugo --gc --minify --baseURL "https://beautifulnature.github.io/hugoinaction/chapter-02-03"
+      
+      - name: Upload artifact for deployment
+        uses: actions/upload-artifact@v3
+        with:
+          name: github-pages-chapter-02-03 # Unique naming per run
+          path: ./public
+
+  build-chapter-02-04:
+    runs-on: ubuntu-latest  
+    needs: [build-chapter-02-01, build-chapter-02-02, build-chapter-02-03] # Wait for previous builds to complete
+    
+    env:
+      HUGO_VERSION: 0.140.1 
+    steps:
+      - name: Install Hugo CLI 
+        run: | 
+           wget -O ${{ runner.temp }}/hugo.deb https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb \
+           && sudo dpkg -i ${{ runner.temp }}/hugo.deb          
+    
+      - name : Checkout Code 
+        uses : actions/checkout@v4 
+        with : 
+           ref : chapter-02-04 
+           submodules : recursive 
+           fetch-depth : 0 
+    
+      - name : Build with Hugo 
+        env : 
+           HUGO_CACHEDIR : ${{ runner.temp }}/hugo_cache 
+           HUGO_ENVIRONMENT : production 
+           TZ : America/Los_Angeles 
+        run : | 
+           hugo --gc --minify --baseURL "https://beautifulnature.github.io/hugoinaction/chapter-02-04" 
+    
+      - name : Upload artifact for deployment 
+        uses : actions/upload-artifact@v3 
+        with : 
+           name : github-pages-chapter-02-04 # Unique naming per run 
+           path : ./public 
 
   deploy:
     runs-on: ubuntu-latest  
-    needs: build
+    needs: [build-chapter-02-01, build-chapter-02-02, build-chapter-02-03, build-chapter-02-04] # Wait for all builds
     
     steps:
       - name: Download artifact for deployment (chapter 2.1)
@@ -52,29 +161,21 @@ jobs:
         with:
           name: github-pages-chapter-02-01
       
-      - name: Deploy to GitHub Pages (chapter 2.1)
-        uses: actions/deploy-pages@v4
-        
       - name: Download artifact for deployment (chapter 2.2)
         uses: actions/download-artifact@v4 
         with:
           name: github-pages-chapter-02-02
       
-      - name: Deploy to GitHub Pages (chapter 2.2)
-        uses: actions/deploy-pages@v4
-        
       - name: Download artifact for deployment (chapter 2.3)
         uses: actions/download-artifact@v4 
         with:
           name: github-pages-chapter-02-03
       
-      - name: Deploy to GitHub Pages (chapter 2.3)
-        uses: actions/deploy-pages@v4
-        
       - name: Download artifact for deployment (chapter 2.4)
         uses: actions/download-artifact@v4 
         with:
           name: github-pages-chapter-02-04
       
-      - name: Deploy to GitHub Pages (chapter 2.4)
+      - name: Deploy to GitHub Pages
+        id: deployment
         uses: actions/deploy-pages@v4
