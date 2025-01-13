@@ -34,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        branch: [chapter-02-01, chapter-02-02, chapter-02-03, chpater-02-04]
+        branch: [chapter-02-01, chapter-02-02, chapter-02-03, chapter-02-04]
     env:
       HUGO_VERSION: 0.140.1
     steps:
