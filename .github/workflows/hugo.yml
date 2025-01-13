@@ -54,7 +54,7 @@ jobs:
       - name: Upload artifact for deployment
         uses: actions/upload-pages-artifact@v3
         with:
-          name: github-pages-${{ github.run_id }} # Unique naming per run
+          name: github-pages-${{ github.run_id }}-${{ matrix.branch }} # Unique naming per run
           path: ./public
 
   deploy:
@@ -65,7 +65,7 @@ jobs:
       - name: Download artifact for deployment
         uses: actions/download-artifact@v4 
         with:
-          name: github-pages-${{ github.run_id }} # Match the artifact name used in build job
+          name: github-pages-${{ github.run_id }}-${{ matrix.branch }} # Match the artifact name used in build job
       
       - name: Deploy to GitHub Pages
         id: deployment
