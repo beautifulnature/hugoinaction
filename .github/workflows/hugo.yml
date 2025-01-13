@@ -50,7 +50,7 @@ jobs:
            hugo --gc --minify --baseURL "https://beautifulnature.github.io/hugoinaction/" 
     
       - name : Upload artifact for deployment 
-        uses : actions/upload-pages-artifact@v1
+        uses : actions/upload-artifact@v4
         with : 
            name : chapter-02-04 # Unique naming per run 
            path : ./public 
