@@ -47,7 +47,7 @@ jobs:
            HUGO_ENVIRONMENT : production 
            TZ : America/Los_Angeles 
         run : | 
-           hugo --gc --minify --baseURL "https://beautifulnature.github.io/hugoinaction/chapter-02-04" 
+           hugo --gc --minify --baseURL "https://beautifulnature.github.io/hugoinaction/" 
     
       - name : Upload artifact for deployment 
         uses : actions/upload-artifact@v4
