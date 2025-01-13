@@ -9,6 +9,11 @@ on:
       - chapter-02-04
   workflow_dispatch:
 
+permissions:
+  id-token: write  # Ensure write access for id-token
+  pages: write      # Ensure write access for GitHub Pages
+  contents: read    # Read access for repository contents
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -21,55 +26,31 @@ jobs:
         with:
           ref: ${{ matrix.branch }}
           submodules: recursive
-      
+   
       - name: Install Hugo CLI
         run: |
           wget -O hugo.deb https://github.com/gohugoio/hugo/releases/download/v0.140.1/hugo_extended_0.140.1_linux-amd64.deb \
           && sudo dpkg -i hugo.deb
-      
+   
       - name: Build with Hugo
         run: |
           hugo --gc --minify --baseURL "https://yourusername.github.io/yourrepository/${{ matrix.branch }}"
-      
+   
       - name: Upload artifact for deployment
         uses: actions/upload-artifact@v4
         with:
-          name: github-pages-${{ matrix.branch }} # Unique naming per branch
+          name: github-pages-${{ matrix.branch }}
           path: ./public
 
   deploy:
     runs-on: ubuntu-latest  
     needs: build
-    
+   
     steps:
-      - name: Download artifact for deployment (chapter 2.1)
+      - name: Download artifact for deployment
         uses: actions/download-artifact@v4 
         with:
-          name: github-pages-chapter-02-01
+          name: github-pages-${{ matrix.branch }}
       
-      - name: Deploy to GitHub Pages (chapter 2.1)
-        uses: actions/deploy-pages@v4
-        
-      - name: Download artifact for deployment (chapter 2.2)
-        uses: actions/download-artifact@v4 
-        with:
-          name: github-pages-chapter-02-02
-      
-      - name: Deploy to GitHub Pages (chapter 2.2)
-        uses: actions/deploy-pages@v4
-        
-      - name: Download artifact for deployment (chapter 2.3)
-        uses: actions/download-artifact@v4 
-        with:
-          name: github-pages-chapter-02-03
-      
-      - name: Deploy to GitHub Pages (chapter 2.3)
-        uses: actions/deploy-pages@v4
-        
-      - name: Download artifact for deployment (chapter 2.4)
-        uses: actions/download-artifact@v4 
-        with:
-          name: github-pages-chapter-02-04
-      
-      - name: Deploy to GitHub Pages (chapter 2.4)
+      - name: Deploy to GitHub Pages
         uses: actions/deploy-pages@v4
