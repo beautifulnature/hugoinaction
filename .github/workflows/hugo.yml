@@ -5,6 +5,9 @@ on:
   # Runs on pushes targeting the default branch
   push:
     branches:
+      - chapter-02-01
+      - chapter-02-02
+      - chapter-02-03
       - chapter-02-04
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -29,6 +32,9 @@ defaults:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        branch: [chapter-02-01, chapter-02-02, chapter-02-03, chpater-02-04]
     env:
       HUGO_VERSION: 0.140.1
     steps:
@@ -41,7 +47,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
-          ref: chapter-02-04
+          ref: ${{ matrix.branch }}
           submodules: recursive
           fetch-depth: 0
       - name: Setup Pages
@@ -58,7 +64,7 @@ jobs:
           hugo \
             --gc \
             --minify \
-            --baseURL "https://beautifulnature.github.io/hugoinaction/"
+            --baseURL "https://beautifulnature.github.io/hugoinaction/${{ matrix.branch }}"
       - name: Upload artifact for deployment
         uses: actions/upload-pages-artifact@v3
         with:
